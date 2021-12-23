@@ -27,6 +27,15 @@ class CalculatorTest {
     }
 
     @Test
+    void getSin() { assertEquals(0.0, new Calculator().getSin(0.0), 1.0e-6);}
+
+    @Test
+    void getCos() { assertEquals(1.0, new Calculator().getCos(0.0), 1.0e-6);}
+
+    @Test
+    void getTan() { assertEquals(1.0, new Calculator().getTan(45.0), 1.0e-6);}
+
+    @Test
     void classHasSevenMethods() {
         assertEquals(7, Calculator.class.getMethods().length - Object.class.getMethods().length);
     }
