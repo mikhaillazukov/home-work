@@ -7,7 +7,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -54,6 +57,44 @@ class AccountServiceTest {
         when(accountRepository.getAllAccountsByClientId(clientId)).thenReturn(accounts);
 
         assertFalse(accountService.isClientHasContract(clientId, contractNumber));
+    }
+
+    @SneakyThrows
+    @Test
+    void creditDebtExist() {
+        Map<Long, BigDecimal> accountsAndBalance = new HashMap<>();
+        accountsAndBalance.put(111L, BigDecimal.valueOf(-1000343.43));
+        accountsAndBalance.put(222L, BigDecimal.valueOf(2305.54));
+
+        long clientId = 1L;
+
+        when(accountRepository.getAllAccountsByClientId(clientId)).thenReturn(accountsAndBalance.keySet());
+
+        for (long contractNumber : accountsAndBalance.keySet()) {
+            when(accountRepository.getAccountBalanceByContractNumber(contractNumber))
+                    .thenReturn(accountsAndBalance.get(contractNumber));
+        }
+
+        assertTrue(accountService.isClientHasCreditDebt(clientId));
+    }
+
+    @SneakyThrows
+    @Test
+    void creditDebtNotExist() {
+        Map<Long, BigDecimal> accountsAndBalance = new HashMap<>();
+        accountsAndBalance.put(111L, BigDecimal.valueOf(4356.43));
+        accountsAndBalance.put(222L, BigDecimal.valueOf(2305.54));
+
+        long clientId = 1L;
+
+        when(accountRepository.getAllAccountsByClientId(clientId)).thenReturn(accountsAndBalance.keySet());
+
+        for (long contractNumber : accountsAndBalance.keySet()) {
+            when(accountRepository.getAccountBalanceByContractNumber(contractNumber))
+                    .thenReturn(accountsAndBalance.get(contractNumber));
+        }
+
+        assertFalse(accountService.isClientHasCreditDebt(clientId));
     }
 
     @Test
