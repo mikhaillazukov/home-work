@@ -16,13 +16,12 @@ public class FileAccountRepository implements AccountRepository {
 
     @NonNull String filePath;
 
-    public Map<Long, Set<Long>> readAccountsFromFile(){
+    public Map<Long, Set<Long>> readAccountsFromFile() {
         HashMap<Long, Set<Long>> clientIdToContractNumber = new HashMap<>();
 
         String NO_DIGIT_REGEX = "\\D"; // Для удаления всех нечисловых символов
 
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(filePath));
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.contains("\"clientId\":")) {
@@ -37,7 +36,6 @@ public class FileAccountRepository implements AccountRepository {
                         clientIdToContractNumber.put(clientId, new HashSet<>(Arrays.asList(contractNumber)));
                 }
             }
-            reader.close();
         } catch (IOException e) {
             throw new RuntimeException("Файл не существует!");
         }
@@ -58,9 +56,10 @@ public class FileAccountRepository implements AccountRepository {
     public void updateContractNumberByClientId(long clientId, long olgContractNumber, long newContractNumber) {
         String DIGIT_REGEX = "\\d"; // Для удаления всех числовых символов
 
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(filePath));
-            ArrayList<String> fileContent = new ArrayList<>();
+        ArrayList<String> fileContent = new ArrayList<>(); // Массив для хранения текста из файла
+
+        // Считываем данные из файла и заменяем ContractNumber на новый
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 fileContent.add(line);
@@ -74,15 +73,18 @@ public class FileAccountRepository implements AccountRepository {
 
                 }
             }
-            reader.close();
+        } catch (IOException e) {
+            throw new RuntimeException("Файл не существует!");
+        }
 
-            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
+        // Записываем исправленные данные в файл
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             writer.write(String.join("\n", fileContent));
-            writer.close();
         } catch (IOException e) {
             throw new RuntimeException("Файл не существует!");
         }
     }
+
 
     @Override
     public BigDecimal getAccountBalanceByContractNumber(long contractNumber) {
