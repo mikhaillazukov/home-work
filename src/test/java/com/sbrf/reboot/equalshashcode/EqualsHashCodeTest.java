@@ -1,4 +1,4 @@
-package com.sbrf.reboot;
+package com.sbrf.reboot.equalshashcode;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
