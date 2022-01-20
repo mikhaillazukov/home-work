@@ -33,7 +33,7 @@ class AccountServiceTest {
     @SneakyThrows
     @Test
     void contractExist() {
-        Set<Long> accounts = new HashSet();
+        Set<Long> accounts = new HashSet<>();
         accounts.add(111L);
 
         long clientId = 1L;
@@ -48,7 +48,7 @@ class AccountServiceTest {
     @SneakyThrows
     @Test
     void contractNotExist() {
-        Set<Long> accounts = new HashSet();
+        Set<Long> accounts = new HashSet<>();
         accounts.add(222L);
 
         long clientId = 1L;
@@ -99,11 +99,11 @@ class AccountServiceTest {
 
     @Test
     void repositoryHasTreeMethods() {
-        assertEquals(2, AccountRepository.class.getMethods().length);
+        assertEquals(3, AccountRepository.class.getMethods().length);
     }
 
     @Test
-    void serviceHasTreeMethods() {
+    void serviceHasTwoMethods() {
         assertEquals(2, AccountService.class.getMethods().length - Object.class.getMethods().length);
     }
 
