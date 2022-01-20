@@ -2,8 +2,7 @@ package com.sbrf.reboot.collections;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -32,7 +31,8 @@ public class CollectionsTest {
 
         List<String> students = null;
 
-        //...
+        students = new LinkedList<>(Arrays.asList("Иванов", "Петров", "Сидоров"));
+        students.add(0, "Козлов");
 
         assertEquals(4, students.size());
     }
@@ -52,7 +52,7 @@ public class CollectionsTest {
 
         Set<Integer> moneyBox = null;
 
-        //...
+        moneyBox = new HashSet<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 
         assertEquals(10, moneyBox.size());
     }
@@ -74,10 +74,46 @@ public class CollectionsTest {
 
         List<Book> bookshelf = null;
 
-        //...
+        bookshelf = new ArrayList<>(Arrays.asList(new Book(), new Book(), new Book()));
 
         assertEquals(3, bookshelf.size());
     }
 
+    /*
+     * Задача.
+     * Имеется очередь в банк. Люди должны обслуживаться в том порядке, в котором пришли.
+     *
+     * Вопрос.
+     * Какую коллекцию из реализаций интерфейса Collection вы предпочтете использовать для организации очереди.
+     */
 
+    @Test
+    public void addClientToQueue() {
+        class Client {
+            private final String name;
+
+            public Client(String name) {
+                this.name = name;
+            }
+
+            public String getName() {
+                return name;
+            }
+        }
+
+        List<String> names = new ArrayList<>(Arrays.asList("Антон", "Иван", "Сергей", "Анна", "Петр"));
+        int clientsServed = names.size() / 2;
+
+        Queue<Client> clientQueue = new LinkedList<>();
+
+        for (String name : names) {
+            clientQueue.add(new Client(name));
+        }
+
+        for (int i = 0; i < clientsServed; i++) {
+            assertEquals(names.get(i), clientQueue.poll().getName());
+        }
+
+        assertEquals(names.size() - clientsServed, clientQueue.size());
+    }
 }
