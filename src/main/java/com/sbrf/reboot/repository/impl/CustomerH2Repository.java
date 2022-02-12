@@ -2,6 +2,7 @@ package com.sbrf.reboot.repository.impl;
 
 import com.sbrf.reboot.dto.Customer;
 import com.sbrf.reboot.repository.CustomerRepository;
+import lombok.NonNull;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class CustomerH2Repository implements CustomerRepository {
         String sqlQuery = "CREATE TABLE IF NOT EXISTS CUSTOMERS (" +
                 "ID BIGINT NOT NULL AUTO_INCREMENT, " +
                 "NAME VARCHAR(255), " +
-                "EMAIL VARCHAR(255), " +
+                "EMAIL VARCHAR(255) UNIQUE, " +
                 "PRIMARY KEY(ID))";
 
         try(Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
@@ -56,6 +57,10 @@ public class CustomerH2Repository implements CustomerRepository {
 
     @Override
     public boolean createCustomer(String name, String eMail) {
+        if (isCustomerExist(eMail)) {
+            return false;
+        }
+
         String sqlQuery = "INSERT INTO CUSTOMERS (NAME, EMAIL) VALUES(?,?)";
 
         try(Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
@@ -71,6 +76,64 @@ public class CustomerH2Repository implements CustomerRepository {
             throw new RuntimeException(e.getMessage());
         }
 
+    }
+
+    @Override
+    public boolean isCustomerExist(@NonNull String eMail) {
+        String sqlQuery = "SELECT * FROM CUSTOMERS WHERE (EMAIL = ?)";
+
+        try(Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            PreparedStatement stmt = conn.prepareStatement(sqlQuery)){
+            Class.forName(JDBC_DRIVER);
+
+            stmt.setString(1, eMail);
+
+            ResultSet resultSet = stmt.executeQuery();
+
+            return resultSet.next();
+
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public boolean deleteCustomer(@NonNull long id) {
+        String sqlQuery = "DELETE FROM CUSTOMERS WHERE (ID = ?)";
+
+        try(Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            PreparedStatement stmt = conn.prepareStatement(sqlQuery)){
+            Class.forName(JDBC_DRIVER);
+
+            stmt.setLong(1, id);
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public long getCustomerIdByEmail(@NonNull String eMail) {
+        String sqlQuery = "SELECT ID FROM CUSTOMERS WHERE (EMAIL = ?)";
+
+        try(Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            PreparedStatement stmt = conn.prepareStatement(sqlQuery)){
+            Class.forName(JDBC_DRIVER);
+
+            stmt.setString(1, eMail);
+
+            ResultSet resultSet = stmt.executeQuery();
+
+            if (resultSet.next())
+                return resultSet.getLong("ID");
+            else
+                return -1L;
+
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 }
 

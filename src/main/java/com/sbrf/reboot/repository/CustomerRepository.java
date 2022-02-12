@@ -11,4 +11,9 @@ public interface CustomerRepository {
 
     List<Customer> getAll();
 
+    boolean isCustomerExist(@NonNull String eMail);
+
+    boolean deleteCustomer(@NonNull long id);
+
+    long getCustomerIdByEmail(@NonNull String eMail);
 }
